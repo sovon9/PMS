@@ -1,11 +1,14 @@
 package com.sovon9.Reservation_service.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sovon9.Reservation_service.dto.ReservationSearchDTO;
+import com.sovon9.Reservation_service.log.service.LogService;
 import com.sovon9.Reservation_service.model.ReservationVO;
 import com.sovon9.Reservation_service.repository.ReservationRepository;
 
@@ -19,9 +22,17 @@ public class ReservationService {
 
 	@Autowired
 	private ReservationRepository repository;
+	@Autowired
+	private LogService logService;
 	
 	public ReservationVO saveReservationData(ReservationVO resVO)
 	{
+		try {
+			if(null!=resVO.getResID())
+			logService.logChange(resVO, getResData(resVO.getResID()),"1200", "RES", null);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		return repository.save(resVO);
 	}
 
@@ -31,6 +42,16 @@ public class ReservationService {
 
 	public ReservationVO getResData(Long resID) {
 		return repository.findById(resID).orElse(null);
+	}
+
+	public List<ReservationVO> fetchReservationData(String status)
+	{
+		return repository.findByStatus(status);
+	}
+
+	public List<ReservationVO> findReservationData(Map<String, Object> queryParam)
+	{
+		return repository.findReservations(queryParam);
 	}
 	
 }

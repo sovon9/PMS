@@ -1,4 +1,4 @@
-package com.sovon9.Reservation_service.dto;
+package com.sovon9.RRMS_Portal.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -39,22 +39,6 @@ public class ReservationSearchDTO {
 	}
 	public void setGuestID(Long guestID) {
 		this.guestID = guestID;
-	}
-	public String getFirstName()
-	{
-		return firstName;
-	}
-	public void setFirstName(String firstName)
-	{
-		this.firstName = firstName;
-	}
-	public String getLastName()
-	{
-		return lastName;
-	}
-	public void setLastName(String lastName)
-	{
-		this.lastName = lastName;
 	}
 	public Date getCreateDate() {
 		return createDate;
@@ -115,6 +99,22 @@ public class ReservationSearchDTO {
 	public void setRoomnum(Integer roomnum)
 	{
 		this.roomnum = roomnum;
+	}
+	public String getFirstName()
+	{
+		return firstName;
+	}
+	public void setFirstName(String firstName)
+	{
+		this.firstName = firstName;
+	}
+	public String getLastName()
+	{
+		return lastName;
+	}
+	public void setLastName(String lastName)
+	{
+		this.lastName = lastName;
 	}
 	
 }

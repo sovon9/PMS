@@ -1,25 +1,29 @@
-package com.sovon9.Reservation_service.dto;
+package com.sovon9.RRMS_Portal.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
-public class ReservationSearchDTO {
+import org.springframework.format.annotation.DateTimeFormat;
+
+public class Reservation {
 
 	private Long rrID;
 	private Long resID;
 	private Long guestID;
 	private String firstName;
 	private String lastName;
-	private Date createDate;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate createDate;
 	private String status;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate arriveDate;
 	private LocalTime arriveTime;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deptDate;
 	private LocalTime deptTime;
-	private String paymentType;
 	private Integer roomnum;
-	public ReservationSearchDTO() {
+
+	public Reservation() {
 		super();
 	}
 	public Long getRrID() {
@@ -56,17 +60,27 @@ public class ReservationSearchDTO {
 	{
 		this.lastName = lastName;
 	}
-	public Date getCreateDate() {
-		return createDate;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
 	public String getStatus() {
 		return status;
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public Integer getRoomnum()
+	{
+		return roomnum;
+	}
+	public void setRoomnum(Integer roomnum)
+	{
+		this.roomnum = roomnum;
+	}
+	public LocalDate getCreateDate()
+	{
+		return createDate;
+	}
+	public void setCreateDate(LocalDate createDate)
+	{
+		this.createDate = createDate;
 	}
 	public LocalDate getArriveDate()
 	{
@@ -99,22 +113,6 @@ public class ReservationSearchDTO {
 	public void setDeptTime(LocalTime deptTime)
 	{
 		this.deptTime = deptTime;
-	}
-	public String getPaymentType()
-	{
-		return paymentType;
-	}
-	public void setPaymentType(String paymentType)
-	{
-		this.paymentType = paymentType;
-	}
-	public Integer getRoomnum()
-	{
-		return roomnum;
-	}
-	public void setRoomnum(Integer roomnum)
-	{
-		this.roomnum = roomnum;
 	}
 	
 }

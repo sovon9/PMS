@@ -1,6 +1,8 @@
 package com.sovon9.Reservation_service.model;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -13,8 +15,13 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="res")
-public class ReservationVO {
+public class ReservationVO implements Serializable{
 
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2231968940133452008L;
 	@Column
 	private Long pmsID;
 	@Id
@@ -28,17 +35,21 @@ public class ReservationVO {
 	@Column
 	private String lastName;
 	@Column
-	private Date createDate;
+	private LocalDate createDate;
 	@Column
 	private String status;
 	@Column
-	private Date arriveDateTime;
+	private LocalDate arriveDate;
 	@Column
-	private Date deptDateTime;
+	private LocalTime arriveTime;
+	@Column
+	private LocalDate deptDate;
+	@Column
+	private LocalTime deptTime;
 	@Column
 	private String paymentType;
 	@Column
-	private Integer roonum;
+	private Integer roomnum;
 	public ReservationVO() {
 		super();
 	}
@@ -54,29 +65,51 @@ public class ReservationVO {
 	public void setGuestID(Long guestID) {
 		this.guestID = guestID;
 	}
-	public Date getCreateDate() {
-		return createDate;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
 	public String getStatus() {
 		return status;
 	}
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Date getArriveDateTime() {
-		return arriveDateTime;
+	public LocalDate getCreateDate()
+	{
+		return createDate;
 	}
-	public void setArriveDateTime(Date arriveDateTime) {
-		this.arriveDateTime = arriveDateTime;
+	public void setCreateDate(LocalDate createDate)
+	{
+		this.createDate = createDate;
 	}
-	public Date getDeptDateTime() {
-		return deptDateTime;
+	public LocalDate getArriveDate()
+	{
+		return arriveDate;
 	}
-	public void setDeptDateTime(Date deptDateTime) {
-		this.deptDateTime = deptDateTime;
+	public void setArriveDate(LocalDate arriveDate)
+	{
+		this.arriveDate = arriveDate;
+	}
+	public LocalTime getArriveTime()
+	{
+		return arriveTime;
+	}
+	public void setArriveTime(LocalTime arriveTime)
+	{
+		this.arriveTime = arriveTime;
+	}
+	public LocalDate getDeptDate()
+	{
+		return deptDate;
+	}
+	public void setDeptDate(LocalDate deptDate)
+	{
+		this.deptDate = deptDate;
+	}
+	public LocalTime getDeptTime()
+	{
+		return deptTime;
+	}
+	public void setDeptTime(LocalTime deptTime)
+	{
+		this.deptTime = deptTime;
 	}
 	public Long getRrID() {
 		return pmsID;
@@ -109,20 +142,23 @@ public class ReservationVO {
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
 	}
-	
-	public Integer getRoonum() {
-		return roonum;
+	public Integer getRoomnum()
+	{
+		return roomnum;
 	}
-	public void setRoonum(Integer roonum) {
-		this.roonum = roonum;
-	}
-	@Override
-	public int hashCode() {
-		return Objects.hash(arriveDateTime, createDate, deptDateTime, firstName, guestID, lastName, paymentType, pmsID,
-				resID, roonum, status);
+	public void setRoomnum(Integer roomnum)
+	{
+		this.roomnum = roomnum;
 	}
 	@Override
-	public boolean equals(Object obj) {
+	public int hashCode()
+	{
+		return Objects.hash(arriveDate, arriveTime, createDate, deptDate, deptTime, firstName, guestID, lastName,
+				paymentType, pmsID, resID, roomnum, status);
+	}
+	@Override
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -130,13 +166,13 @@ public class ReservationVO {
 		if (getClass() != obj.getClass())
 			return false;
 		ReservationVO other = (ReservationVO) obj;
-		return Objects.equals(arriveDateTime, other.arriveDateTime) && Objects.equals(createDate, other.createDate)
-				&& Objects.equals(deptDateTime, other.deptDateTime) && Objects.equals(firstName, other.firstName)
+		return Objects.equals(arriveDate, other.arriveDate) && Objects.equals(arriveTime, other.arriveTime)
+				&& Objects.equals(createDate, other.createDate) && Objects.equals(deptDate, other.deptDate)
+				&& Objects.equals(deptTime, other.deptTime) && Objects.equals(firstName, other.firstName)
 				&& Objects.equals(guestID, other.guestID) && Objects.equals(lastName, other.lastName)
 				&& Objects.equals(paymentType, other.paymentType) && Objects.equals(pmsID, other.pmsID)
-				&& Objects.equals(resID, other.resID) && Objects.equals(roonum, other.roonum)
+				&& Objects.equals(resID, other.resID) && Objects.equals(roomnum, other.roomnum)
 				&& Objects.equals(status, other.status);
 	}
-	
 	
 }
