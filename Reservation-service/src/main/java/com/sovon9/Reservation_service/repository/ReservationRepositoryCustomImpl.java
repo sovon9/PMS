@@ -31,13 +31,32 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 		 */
 		// select * from reservation
 		Root<ReservationVO> root = query.from(ReservationVO.class);
-		List<Predicate> predicates = new ArrayList<>();
+		List<Predicate> predicates = new ArrayList<>(); // query conditions
 		// where clause
 		//where guestID = 
 		if(null!=searchDTO.getGuestID())
 		{
+			// get takes the attribute name here it's guestID
 			Predicate guestID = cb.equal(root.get("guestID"), searchDTO.getGuestID());
 			predicates.add(guestID);
+		}
+		// where firstName = 
+		if(null!=searchDTO.getFirstName())
+		{
+			if (!searchDTO.getFirstName().isEmpty())
+			{
+				Predicate firstName = cb.equal(root.get("firstName"), searchDTO.getFirstName());
+				predicates.add(firstName);
+			}
+		}
+		// where lastName =
+		if (null != searchDTO.getLastName())
+		{
+			if (!searchDTO.getLastName().isEmpty())
+			{
+				Predicate lastName = cb.equal(root.get("lastName"), searchDTO.getLastName());
+				predicates.add(lastName);
+			}
 		}
 		//where createDate = 
 		if(null!=searchDTO.getCreateDate())
@@ -48,13 +67,32 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 		//where status = 
 		if(null!=searchDTO.getStatus())
 		{
-			Predicate status = cb.equal(root.get("status"), searchDTO.getStatus());
-			predicates.add(status);
+			if (!searchDTO.getStatus().isEmpty())
+			{
+				Predicate status = cb.equal(root.get("status"), searchDTO.getStatus());
+				predicates.add(status);
+			}
+		}
+		//where arriveDate = 
+		//Predicate arriveDate = cb.equal(root.get("arriveDate"), searchDTO.getArriveDate());
+		if(null!=searchDTO.getArriveDate())
+		{
+			Predicate arriveDate = cb.equal(root.get("arriveDate"), searchDTO.getArriveDate());
+			predicates.add(arriveDate);
 		}
 		//where status = 
-		Predicate arriveDate = cb.equal(root.get("arriveDate"), searchDTO.getArriveDate());
-		//where status = 
-		Predicate deptDate = cb.equal(root.get("deptDate"), searchDTO.getDeptDate());
+		//Predicate deptDate = cb.equal(root.get("deptDate"), searchDTO.getDeptDate());
+		if(null!=searchDTO.getDeptDate())
+		{
+			Predicate deptDate = cb.equal(root.get("deptDate"), searchDTO.getDeptDate());
+			predicates.add(deptDate);
+		}
+		//where status =
+		if(null!=searchDTO.getRoomnum())
+		{
+			Predicate roomnum = cb.equal(root.get("roomnum"), searchDTO.getRoomnum());
+			predicates.add(roomnum);
+		}
 		// final query= select * from reservation where guestID =? and createDate =? and status=? and arriveDateTime=? and deptDateTime=?
 		query.where(cb.and(predicates.toArray(Predicate[]::new)));
 		TypedQuery<ReservationVO> typedQuery = entityManager.createQuery(query);

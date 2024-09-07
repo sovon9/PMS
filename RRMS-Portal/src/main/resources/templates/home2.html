@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Property Management System</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="title">
+                <h1>PMS</h1>
+            </div>
+            <div class="agent-info">
+                <span>Date and Time: <span th:text="${currentDateTime}">Placeholder Date and Time</span></span><br>
+                <span>Agent: <span th:text="${agentName}">Placeholder Agent Name</span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Section -->
+    <nav class="navigation">
+        <a th:href="@{/create-res}" ><button class="nav-button">Create Reservation</button></a>
+        <a th:href="@{/quick-modify}" ><button class="nav-button">Quick Modify</button></a>
+        <a th:href="@{/search-res}" ><button class="nav-button">Search Reservation</button></a>
+        <a th:href="@{/guest-batch-update}" ><button class="nav-button">Guest Batch Update</button></a>
+        <a th:href="@{/guest-profile-update}" ><button class="nav-button">Guest Profile Update</button></a>
+        <a th:href="@{/room-management}"><button  class="nav-button">Room Management</button></a>
+    </nav>
+
+    <!-- Bottom Section -->
+    <footer class="footer">
+        <!-- Leave this section blank or add any additional content here -->
+    </footer>
+</body>
+</html>

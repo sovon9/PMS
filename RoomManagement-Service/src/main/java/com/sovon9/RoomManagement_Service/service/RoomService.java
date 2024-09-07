@@ -1,5 +1,6 @@
 package com.sovon9.RoomManagement_Service.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class RoomService {
 	public Optional<Room> getRoom(Integer roomnum)
 	{
 		return repository.findById(roomnum);
+	}
+	
+	public List<Room> getAllRoomDetails()
+	{
+		return repository.findAll();
 	}
 	
 }

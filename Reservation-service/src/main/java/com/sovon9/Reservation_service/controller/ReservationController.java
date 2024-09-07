@@ -2,9 +2,7 @@ package com.sovon9.Reservation_service.controller;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sovon9.Reservation_service.RoomProxy;
+import com.sovon9.Reservation_service.dto.GuestCommInfo;
+import com.sovon9.Reservation_service.dto.ReservationSearchDTO;
 import com.sovon9.Reservation_service.model.ReservationVO;
+import com.sovon9.Reservation_service.service.KafkaProducerService;
 import com.sovon9.Reservation_service.service.ReservationService;
 
 @RestController
@@ -34,6 +35,8 @@ public class ReservationController {
 	private ReservationService service;
 	@Autowired
 	private RoomProxy roomProxy;
+	@Autowired
+	private KafkaProducerService producerService;
 	
 	/**
 	 * 
@@ -47,6 +50,16 @@ public class ReservationController {
 		if(null!=saveReservationData && null!=saveReservationData.getRoomnum())
 		{
 			roomProxy.upateResRoomStatus(saveReservationData.getResID(),saveReservationData.getRoomnum(), "VB"); // vacant blocked
+		}
+		// get guest comm info 
+		if(null != saveReservationData.getGuestID())
+		{
+			GuestCommInfo guestCommInfo = service.getGuestCommInfo(saveReservationData.getGuestID());
+			// send email to guest
+			if (null != guestCommInfo && null!=guestCommInfo.getEmail())
+			{
+				producerService.publish(guestCommInfo);
+			}
 		}
 		return saveReservationData;
 	}
@@ -78,7 +91,7 @@ public class ReservationController {
 	 * @return null if no res found with resID
 	 */
 	@PutMapping("/reservaion/checkout/{resID}")
-	public ReservationVO checkInReservation(@PathVariable("resID") Long resID)
+	public ReservationVO checkOutReservation(@PathVariable("resID") Long resID)
 	{
 		ReservationVO resVO = service.getResData(resID);
 		if (null != resVO) {
@@ -100,26 +113,25 @@ public class ReservationController {
 		    @RequestParam(value = "lastName", required = false) String lastName,
 		    @RequestParam(value = "status", required = false) String status,
 		    @RequestParam(value = "arriveDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate arriveDate,
-		    @RequestParam(value = "arriveTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalTime arriveTime,
+		    @RequestParam(value = "arriveTime", required = false) LocalTime arriveTime,
 		    @RequestParam(value = "deptDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate deptDate,
-		    @RequestParam(value = "deptTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalTime deptTime,
+		    @RequestParam(value = "deptTime", required = false) LocalTime deptTime,
 		    @RequestParam(value = "roomnum", required = false) Integer roomnum,
 		    @RequestParam(value = "guestID", required = false) Long guestID)
 	{
-		Map<String,Object> queryParam = new HashMap<>();
-		queryParam.put("firstName", firstName);
-		queryParam.put("status", status);
-		queryParam.put("arriveDate", arriveDate);
-		queryParam.put("arriveTime", arriveTime);
-		queryParam.put("deptDate", deptDate);
-		queryParam.put("deptTime", deptTime);
-		queryParam.put("roomnum", roomnum);
-		queryParam.put("guestID", guestID);
-		
-		return service.findReservationData(queryParam);
+//		Map<String,Object> queryParam = new HashMap<>();
+//		queryParam.put("firstName", firstName);
+//		queryParam.put("status", status);
+//		queryParam.put("arriveDate", arriveDate);
+//		queryParam.put("arriveTime", arriveTime);
+//		queryParam.put("deptDate", deptDate);
+//		queryParam.put("deptTime", deptTime);
+//		queryParam.put("roomnum", roomnum);
+//		queryParam.put("guestID", guestID);
+		ReservationSearchDTO searchDTO = new ReservationSearchDTO(guestID, guestID, guestID, firstName, lastName, null, status, arriveDate, arriveTime, deptDate, deptTime, status, roomnum);
+		return service.findReservationData(searchDTO);
 	}
 	
-	@Cacheable(value = "reservaion", key = "#status")
 	@GetMapping("/reservaion/status/{status}")
 	public List<ReservationVO> getAllReservationByStatus(@PathVariable("status") String status)
 	{

@@ -28,14 +28,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.sovon9.RatePlan_service.dto.RoomDto;
 import com.sovon9.RatePlan_service.job.RatePlanProcessor;
 import com.sovon9.RatePlan_service.model.RatePlanRoomMapping;
-import com.sovon9.RatePlan_service.repository.RatePlanRepository;
+import com.sovon9.RatePlan_service.repository.RatePlanRoomMappingRepository;
 import com.sovon9.RatePlan_service.repository.RoomRepository;
 
 @Configuration
 public class BatchConfig {
 
 	@Autowired
-	private RatePlanRepository ratePlanRepository;
+	private RatePlanRoomMappingRepository ratePlanRoomMappingRepository;
 	@Autowired
 	private RoomRepository roomRepository;
 	@Autowired
@@ -59,7 +59,7 @@ public class BatchConfig {
 	public RepositoryItemReader<RatePlanRoomMapping> ratePlanRoomreader()
 	{
 		RepositoryItemReader<RatePlanRoomMapping> reader = new RepositoryItemReaderBuilder<RatePlanRoomMapping>()
-		         .repository(ratePlanRepository)
+		         .repository(ratePlanRoomMappingRepository)
 		         .name("rateplanroom")
 		         .methodName("findAll")
 		         .pageSize(10)
@@ -138,7 +138,7 @@ public class BatchConfig {
 	public RepositoryItemWriter<RatePlanRoomMapping> writer()
 	{
 		RepositoryItemWriter<RatePlanRoomMapping> itemWriter = new RepositoryItemWriter<>();
-		itemWriter.setRepository(ratePlanRepository); // the repository to use
+		itemWriter.setRepository(ratePlanRoomMappingRepository); // the repository to use
 		itemWriter.setMethodName("save"); // the method to use for writing
 		return itemWriter;
 	}

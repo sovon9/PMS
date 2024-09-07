@@ -3,6 +3,8 @@ package com.sovon9.RRMS_Portal.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -17,9 +19,10 @@ public abstract class BaseController
 		String formattedDateTime = currentDateTime.format(formatter);
 
 		// Get logged-in agent name
-		//Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		//String agentName = authentication.getName(); // This gets the username of the logged-in user
-		String agentName = "1200";
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String agentName = authentication.getName(); // This gets the username of the logged-in user
+		
+		//String agentName = "1200";
 		// Add to model
 		model.addAttribute("currentDateTime", formattedDateTime);
 		model.addAttribute("agentName", agentName);

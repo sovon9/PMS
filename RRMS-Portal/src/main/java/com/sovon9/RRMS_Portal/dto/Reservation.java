@@ -1,12 +1,17 @@
 package com.sovon9.RRMS_Portal.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class Reservation {
+public class Reservation implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long rrID;
 	private Long resID;
 	private Long guestID;
@@ -21,6 +26,8 @@ public class Reservation {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deptDate;
 	private LocalTime deptTime;
+	private String email;
+	private String ratePlan;
 	private Integer roomnum;
 
 	public Reservation() {
@@ -113,6 +120,22 @@ public class Reservation {
 	public void setDeptTime(LocalTime deptTime)
 	{
 		this.deptTime = deptTime;
+	}
+	public String getEmail()
+	{
+		return email;
+	}
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+	public String getRatePlan()
+	{
+		return ratePlan;
+	}
+	public void setRatePlan(String ratePlan)
+	{
+		this.ratePlan = ratePlan;
 	}
 	
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Reservation</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- Link to your external CSS -->
+    <link rel="stylesheet" href="/styles.css"> <!-- Link to external CSS -->
 </head>
 <body>
     <!-- Header -->
@@ -31,7 +31,18 @@
 
     <!-- Main Content: Create Reservation Form -->
     <main class="dashboard">
-        <form th:action="@{/create-reservation}" th:object="${res}" method="post">
+
+		<!-- Error message display -->
+		<div style="color: red;" th:if="${error}">
+			<p th:text="${error}"></p>
+		</div>
+
+		<!-- Success message display -->
+		<div style="color: green;" th:if="${success}">
+			<p th:text="${success}"></p>
+		</div>
+
+		<form th:action="@{/create-res}" th:object="${res}" method="post">
             <table>
                 <tr>
                     <td><label for="firstName">First Name:</label></td>
@@ -43,7 +54,7 @@
                 </tr>
                 <tr>
                     <td><label for="status">Status:</label></td>
-                    <td><input type="text" id="status" th:field="*{status}" placeholder="Enter Status" required></td>
+                    <td><input type="text" id="status" th:field="*{status}" required disabled="disabled"></td>
                 </tr>
                 <tr>
                     <td><label for="arriveDate">Arrival Date:</label></td>
@@ -62,12 +73,28 @@
                     <td><input type="time" id="deptTime" th:field="*{deptTime}" required></td>
                 </tr>
                 <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input type="email" id="email" th:field="*{email}" ></td>
+                </tr>
+                <tr>
+					<td><label for="ratePlan">Rate Plan:</label></td>
+					<td>
+						 <select id="ratePlan" th:field="*{ratePlan}" required>
+							<option value="">Select Rate Plan</option>
+							<option th:each="plan : ${ratePlans}" th:value="${plan.ratePlan}"
+								th:text="${plan.ratePlan}"></option>
+					     </select>
+				    </td>
+				</tr>
+                <tr>
                     <td><label for="roomnum">Room Number:</label></td>
-                    <td><input type="number" id="roomnum" th:field="*{roomnum}" placeholder="Enter Room Number" required></td>
+                    <td><input type="number" id="roomnum" th:field="*{roomnum}" placeholder="Enter Room Number" ></td>
                 </tr>
                 <tr>
                     <td><label for="guestID">Guest ID:</label></td>
-                    <td><input type="text" id="guestID" th:field="*{guestID}" placeholder="Enter Guest ID" required></td>
+                    <td><input type="text" id="guestID" th:field="*{guestID}" placeholder="Enter Guest ID" disabled="disabled">
+                    	 <button type="button" id="searchGuestBtn">Search</button>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -77,12 +104,69 @@
             </table>
         </form>
     </main>
+    <!-- Guest Search Model Box -->
+	<div id="guestSearchModal" class="modal">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h2>Search Guest</h2>
+			<form id="guestSearchForm">
+				<label for="gsGuestID">Guest ID:</label> <input type="text"
+					id="gsGuestID" name="gsGuestID" placeholder="Enter Guest ID"
+					required><br>
+				<br><label for="gsFirstName">First Name:</label> <input type="text"
+					id="gsFirstName" name="gsFirstName" placeholder="Enter First Name"
+					required><br>
+				<br><label for="gsLastName">Last Name:</label> <input type="text"
+					id="gsLastName" name="gsLastName" placeholder="Enter Last Name"
+					required><br>
+				<br><label for="gsbirthDate">Last Name:</label> <input type="date"
+					id="gsbirthDate" name="gsbirthDate" placeholder="Enter Last Name"
+					required><br>
+				<br> <label for="gsGuestPhone">Phone Number:</label> <input
+					type="text" id="gsGuestPhone" name="gsGuestPhone"
+					placeholder="Enter Phone Number" required><br>
+				<br> <label for="gsGuestPincode">Pincode:</label> <input
+					type="text" id="gsGuestPincode" name="gsGuestPincode"
+					placeholder="Enter Pincode" required><br>
+				<br>
 
-    <!-- Footer -->
+				<button type="button" id="searchGuestSubmitBtn" class="nav-button">Search</button>
+			</form>
+			<div id="searchResults" class="search-results">
+				<!-- Search results will be populated here -->
+			</div>
+		</div>
+	</div>
+	<!--  -->
+	<div id="roomSearchModal" class="roomModal">
+		<div class="modal-content">
+			<span class="rsClose">&times;</span>
+			<h2>Room Search</h2>
+			<form>
+				<table>
+					<thead>
+						<tr>
+							<th>Room Number</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="room : ${rooms}">
+							<td th:text="${room}">Room Number</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+			<div id="searchResults" class="search-results">
+				<!-- Search results will be populated here -->
+			</div>
+		</div>
+	</div>
+	<!-- Footer -->
     <footer class="footer">
         <!-- Optional Footer Content -->
     </footer>
 </body>
+    <script th:src="@{/guestsearch.js}"></script> <!-- Link to JS file -->
 </html>
  <!-- 
 <body>

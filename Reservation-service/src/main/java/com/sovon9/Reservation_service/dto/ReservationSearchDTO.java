@@ -22,6 +22,27 @@ public class ReservationSearchDTO {
 	public ReservationSearchDTO() {
 		super();
 	}
+	
+	public ReservationSearchDTO(Long rrID, Long resID, Long guestID, String firstName, String lastName, Date createDate,
+			String status, LocalDate arriveDate, LocalTime arriveTime, LocalDate deptDate, LocalTime deptTime,
+			String paymentType, Integer roomnum)
+	{
+		super();
+		this.rrID = rrID;
+		this.resID = resID;
+		this.guestID = guestID;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.createDate = createDate;
+		this.status = status;
+		this.arriveDate = arriveDate;
+		this.arriveTime = arriveTime;
+		this.deptDate = deptDate;
+		this.deptTime = deptTime;
+		this.paymentType = paymentType;
+		this.roomnum = roomnum;
+	}
+
 	public Long getRrID() {
 		return rrID;
 	}

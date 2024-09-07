@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sovon9.Reservation_service.GuestInfo_ServiceProxy;
+import com.sovon9.Reservation_service.dto.GuestCommInfo;
 import com.sovon9.Reservation_service.dto.ReservationSearchDTO;
 import com.sovon9.Reservation_service.log.service.LogService;
 import com.sovon9.Reservation_service.model.ReservationVO;
@@ -24,6 +26,8 @@ public class ReservationService {
 	private ReservationRepository repository;
 	@Autowired
 	private LogService logService;
+	@Autowired
+	private GuestInfo_ServiceProxy guestInfo_ServiceProxy;
 	
 	public ReservationVO saveReservationData(ReservationVO resVO)
 	{
@@ -52,6 +56,12 @@ public class ReservationService {
 	public List<ReservationVO> findReservationData(Map<String, Object> queryParam)
 	{
 		return repository.findReservations(queryParam);
+	}
+
+	public GuestCommInfo getGuestCommInfo(Long guestID)
+	{
+		return guestInfo_ServiceProxy.getGuestEmailCommInfo(guestID);
+		
 	}
 	
 }

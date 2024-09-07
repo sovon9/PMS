@@ -94,7 +94,7 @@
             </thead>
             <tbody>
                 <tr th:each="reservation : ${searchResult}">
-                    <td th:text="${reservation.rrID}">Reservation ID</td>
+                    <td th:text="${reservation.resID}">Reservation ID</td>
                     <td th:text="${reservation.guestID}">Guest ID</td>
                     <td th:text="${reservation.firstName}">First Name</td>
                     <td th:text="${reservation.lastName}">Last Name</td>

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class ReservationSearchDTO {
 
 	private Long rrID;
@@ -11,10 +13,13 @@ public class ReservationSearchDTO {
 	private Long guestID;
 	private String firstName;
 	private String lastName;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date createDate;
 	private String status;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate arriveDate;
 	private LocalTime arriveTime;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deptDate;
 	private LocalTime deptTime;
 	private String paymentType;
@@ -22,6 +27,27 @@ public class ReservationSearchDTO {
 	public ReservationSearchDTO() {
 		super();
 	}
+	
+	public ReservationSearchDTO(Long rrID, Long resID, Long guestID, String firstName, String lastName, Date createDate,
+			String status, LocalDate arriveDate, LocalTime arriveTime, LocalDate deptDate, LocalTime deptTime,
+			String paymentType, Integer roomnum)
+	{
+		super();
+		this.rrID = rrID;
+		this.resID = resID;
+		this.guestID = guestID;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.createDate = createDate;
+		this.status = status;
+		this.arriveDate = arriveDate;
+		this.arriveTime = arriveTime;
+		this.deptDate = deptDate;
+		this.deptTime = deptTime;
+		this.paymentType = paymentType;
+		this.roomnum = roomnum;
+	}
+
 	public Long getRrID() {
 		return rrID;
 	}
