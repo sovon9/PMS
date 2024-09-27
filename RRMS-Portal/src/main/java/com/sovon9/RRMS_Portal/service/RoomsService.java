@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,17 +36,21 @@ public class RoomsService
 		return roomDtos.stream().filter(rp->rp.getRatePlan().equals(ratePlan)).map(rp->rp.getRoomNum()).collect(Collectors.toList());
 	}
 	
-	public List<RoomDto> getAllRateplanRoomData()
+	public List<RoomDto> getAllRateplanRoomData(String jwtToken)
 	{
 		roomDtos = new ArrayList<>();
 		try
 		{
-			ResponseEntity<RoomDto[]> responseEntity = restTemplate
-					.getForEntity(ROOM_MGMT_SERVICE_URL + "getAllAvailableRooms", RoomDto[].class);
+			 HttpHeaders headers = new HttpHeaders();
+		        headers.set("Authorization", "Bearer " + jwtToken);
+		    HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+		    
+		    ResponseEntity<RoomDto[]> responseEntity = restTemplate
+	                .exchange(ROOM_MGMT_SERVICE_URL + "getAllAvailableRooms", HttpMethod.GET, httpEntity, RoomDto[].class);
 			if (responseEntity.getStatusCode() == HttpStatus.OK)
 			{
 				roomDtos = List.of(responseEntity.getBody());
-				LOGGER.error("========> " + roomDtos);
+				LOGGER.error("Successfully fetched room data: " + roomDtos);
 			}
 		}
 		catch (ResourceAccessException e) {

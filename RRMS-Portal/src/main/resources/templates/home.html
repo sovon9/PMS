@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Property Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles.css"> <!-- Link to external CSS -->
 </head>
 <body>
@@ -13,7 +14,7 @@
                 <h1>PMS</h1>
             </div>
             <div class="agent-info">
-                <span>Date and Time: <span th:text="${currentDateTime}">Placeholder Date and Time</span></span><br>
+                <span>Date: <span th:text="${currentDate}">Placeholder Date</span></span><br>
                 <span>Agent: <span th:text="${agentName}">Placeholder Agent Name</span></span>
             </div>
         </div>
@@ -21,12 +22,14 @@
 
     <!-- Navigation Section -->
     <nav class="navigation">
-        <a th:href="@{/create-res}" ><button class="nav-button">Create Reservation</button></a>
-        <a th:href="@{/quick-modify}" ><button class="nav-button">Quick Modify</button></a>
-        <a th:href="@{/search-res}" ><button class="nav-button">Search Reservation</button></a>
-        <a th:href="@{/guest-batch-update}" ><button class="nav-button">Guest Batch Update</button></a>
-        <a th:href="@{/guest-profile-update}" ><button class="nav-button">Guest Profile Update</button></a>
-        <a th:href="@{/room-management}"><button  class="nav-button">Room Management</button></a>
+        <a th:href="@{/portal/create-res}" ><button class="nav-button">Create Reservation</button></a>
+        <a th:href="@{/portal/quick-modify}" ><button class="nav-button">Quick Modify</button></a>
+        <a th:href="@{/portal/search-res}" ><button class="nav-button">Search Reservation</button></a>
+        <a th:href="@{/portal/guest-batch-update}" ><button class="nav-button">Guest Batch Update</button></a>
+        <a th:href="@{/portal/guest-profile-update}" ><button class="nav-button">Guest Profile Update</button></a>
+        <a th:href="@{/portal/room-management}"><button  class="nav-button">Room Management</button></a>
+        <!-- Administration button only visible for users with the 'Admin' role -->
+        <a th:href="@{/portal/admin}" th:if="${agentRole.contains('ROLE_ADMIN')}" ><button  class="nav-button admin-button">Administration</button></a> 
     </nav>
 
     <!-- Dashboard Section -->
@@ -63,7 +66,8 @@
 
     <!-- Bottom Section -->
     <footer class="footer">
-        <!-- Leave this section blank or add any additional content here -->
+         <h2>© SSPMS</h2>
     </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

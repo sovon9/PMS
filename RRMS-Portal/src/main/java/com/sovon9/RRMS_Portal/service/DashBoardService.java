@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +28,17 @@ public class DashBoardService
 	private String RES_SERVICE_URL;
 	
 	//@Cacheable(value = "reservation", key = "#status")
-	public Reservation[] fetchDashBoardDataForRes(String status)
+	public Reservation[] fetchDashBoardDataForRes(String status, String jwtToken)
 	{
 		ResponseEntity<Reservation[]> responseEntity = null;
 		Reservation[] reservations = {};
 		try
 		{
+			 HttpHeaders headers = new HttpHeaders();
+		        headers.set("Authorization", "Bearer " + jwtToken);
+		    HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 			responseEntity= restTemplate.exchange(
-					RES_SERVICE_URL+"reservaion/status/RES", HttpMethod.GET, null, Reservation[].class);
+					RES_SERVICE_URL+"reservaion/status/RES", HttpMethod.GET, httpEntity, Reservation[].class);
 			if (responseEntity.getStatusCode() == HttpStatus.OK)
 			{
 				reservations = responseEntity.getBody();
@@ -56,4 +61,5 @@ public class DashBoardService
 		}
 		return reservations;
 	}
+	
 }

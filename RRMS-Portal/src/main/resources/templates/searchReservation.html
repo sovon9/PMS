@@ -13,7 +13,7 @@
                 <h1>Create Reservation</h1>
             </div>
             <div class="agent-info">
-                <span>Date and Time: <span th:text="${currentDateTime}">Placeholder Date and Time</span></span><br>
+                <span>Date and Time: <span th:text="${currentDate}">Placeholder Date and Time</span></span><br>
                 <span>Agent: <span th:text="${agentName}">Placeholder Agent Name</span></span>
             </div>
         </div>
@@ -21,12 +21,13 @@
 
     <!-- Navigation Section -->
     <nav class="navigation">
-        <a th:href="@{/home}"><button class="nav-button">Home</button></a>
-        <a th:href="@{/quick-modify}" ><button class="nav-button">Quick Modify</button></a>
-        <a th:href="@{/search-res}" ><button class="nav-button">Search Reservation</button></a>
-        <a th:href="@{/guest-batch-update}" ><button class="nav-button">Guest Batch Update</button></a>
-        <a th:href="@{/guest-profile-update}" ><button class="nav-button">Guest Profile Update</button></a>
-        <a th:href="@{/room-management}"><button  class="nav-button">Room Management</button></a>
+        <a th:href="@{/portal/home}"><button class="nav-button">Home</button></a>
+        <a th:href="@{/portal/quick-modify}" ><button class="nav-button">Quick Modify</button></a>
+        <a th:href="@{/portal/search-res}" ><button class="nav-button">Search Reservation</button></a>
+        <a th:href="@{/portal/guest-batch-update}" ><button class="nav-button">Guest Batch Update</button></a>
+        <a th:href="@{/portal/guest-profile-update}" ><button class="nav-button">Guest Profile Update</button></a>
+        <a th:href="@{/portal/room-management}"><button  class="nav-button">Room Management</button></a>
+        <a th:href="@{/portal/admin}"><button  class="nav-button">Administration</button></a>
     </nav>
 
     <!-- Main Content: Create Reservation Form -->

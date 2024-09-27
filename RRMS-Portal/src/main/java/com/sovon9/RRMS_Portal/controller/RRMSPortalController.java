@@ -27,15 +27,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.sovon9.RRMS_Portal.constants.ResConstants;
 import com.sovon9.RRMS_Portal.dto.GuestDto;
-import com.sovon9.RRMS_Portal.dto.RatePlanRoomMappingDto;
 import com.sovon9.RRMS_Portal.dto.Reservation;
 import com.sovon9.RRMS_Portal.dto.ReservationSearchDTO;
 import com.sovon9.RRMS_Portal.dto.RoomDto;
 import com.sovon9.RRMS_Portal.service.DashBoardService;
+import com.sovon9.RRMS_Portal.service.ExtractJwtTokenFromCookie;
+import com.sovon9.RRMS_Portal.service.ReservationService;
 import com.sovon9.RRMS_Portal.service.RoomsService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
-@RequestMapping("/")
+@RequestMapping("/portal")
 public class RRMSPortalController extends BaseController{
 
 	@Value("${RES_SERVICE_URL}")
@@ -51,24 +54,29 @@ public class RRMSPortalController extends BaseController{
 	DashBoardService dashBoardService;
 	@Autowired
 	RoomsService roomsService;
+	@Autowired
+	ReservationService reservationService;
+	@Autowired
+	private ExtractJwtTokenFromCookie jwtTokenFromCookie;
 	
     @GetMapping("/home")
-	public String home(Model model)
+	public String home(Model model, HttpServletRequest request)
 	{
-    	Reservation[] reservations = dashBoardService.fetchDashBoardDataForRes("RES");
-    	
+    	String jwtToken = jwtTokenFromCookie.extractJwtFromCookie(request);
+    	Reservation[] reservations = dashBoardService.fetchDashBoardDataForRes("RES", jwtToken);
 		model.addAttribute("reservations", List.of(reservations));
 		return "home";
 	}
     
     @GetMapping("/create-res")
-	public String createRes(Model model)
+	public String createRes(Model model, HttpServletRequest request)
 	{
 		Reservation reservation = new Reservation();
 		reservation.setStatus(ResConstants.RES_STATUS);
 		//  Rateplan changes
 		//List<RatePlanRoomMappingDto> ratePlans = List.of(new RatePlanRoomMappingDto(1,"12REGA"));
-		List<RoomDto> allRateplanRoomData = roomsService.getAllRateplanRoomData();
+		String jwtToken = jwtTokenFromCookie.extractJwtFromCookie(request);
+		List<RoomDto> allRateplanRoomData = roomsService.getAllRateplanRoomData(jwtToken);
 	    model.addAttribute("ratePlans", allRateplanRoomData);
 		//
 		model.addAttribute("res", reservation);
@@ -76,7 +84,7 @@ public class RRMSPortalController extends BaseController{
 	}
     
     @PostMapping("/create-res")
-	public String createReservation(@ModelAttribute("res") Reservation res, Model model)
+	public String createReservation(@ModelAttribute("res") Reservation res, Model model, HttpServletRequest request)
 	{
     	try
 		{
@@ -84,22 +92,17 @@ public class RRMSPortalController extends BaseController{
 			{
 				throw new RuntimeException("Error while saving the reservation");
 			}
+			// getting JWT token from cookie
+			String jwtToken = jwtTokenFromCookie.extractJwtFromCookie(request);
 			
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "application/json");
+			headers.set("Authorization", "Bearer " + jwtToken); // adding JWT token to header
 			//
 			if (null!= res && null == res.getGuestID())
 			{
-				GuestDto guestDto = new GuestDto();
-				guestDto.setFirstName(res.getFirstName());
-				guestDto.setLastName(res.getLastName());
-				guestDto.setGuestID(res.getGuestID());
-				guestDto.setEmail(res.getEmail());
-				// create Guest entity
-				HttpEntity<GuestDto> guestEntity = new HttpEntity<>(guestDto, headers);
-				// save guest details
-				ResponseEntity<GuestDto> entity = restTemplate.exchange(GUESTINFO_SERVICE_URL+"guestinfo", HttpMethod.POST, guestEntity,
-						GuestDto.class);
+				
+				ResponseEntity<GuestDto> entity = reservationService.createGuestInfo(res, headers);
 				if (entity.getStatusCode() == HttpStatus.OK)
 				{
 					GuestDto guest = entity.getBody();
@@ -114,11 +117,6 @@ public class RRMSPortalController extends BaseController{
 				
 			}
 			
-			//
-			// setting the header values
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.set("Content-Type", "application/json");
-			
 			// setting Reservation status to RES if not set for create reservation
 			if(null==res.getStatus())
 			{
@@ -127,14 +125,7 @@ public class RRMSPortalController extends BaseController{
 			// setting create date
 			res.setCreateDate(LocalDate.now());
 			
-			HttpEntity<Reservation> requestEntity = new HttpEntity<Reservation>(res, headers);
-
-			 String url = UriComponentsBuilder.fromHttpUrl(RES_SERVICE_URL+"reservaion")
-					 .queryParam("email", res.getEmail().trim())
-					 .toUriString();
-			
-			ResponseEntity<Reservation> responseEntity = restTemplate.exchange(
-					url, HttpMethod.POST, requestEntity, Reservation.class);
+			ResponseEntity<Reservation> responseEntity = reservationService.createReservation(res, headers);
 			// Check response status code
 			if (responseEntity.getStatusCode() == HttpStatus.OK)
 			{
@@ -199,9 +190,11 @@ public class RRMSPortalController extends BaseController{
 
     //////////////////////////  search reservation   /////////////////////////
     @GetMapping({"/search-res","/search-res/{search}"})
-   	public String searchReservation(@ModelAttribute("res") ReservationSearchDTO res, @PathVariable(name="search", required = false) boolean search, Model model)
-   	{
+	public String searchReservation(@ModelAttribute("res") ReservationSearchDTO res,
+			@PathVariable(name = "search", required = false) boolean search, Model model, HttpServletRequest request)
+	{
        LOGGER.error("===>  "+search);
+       String jwtToken = jwtTokenFromCookie.extractJwtFromCookie(request);
        if(search)
        {
     	   String url = UriComponentsBuilder.fromHttpUrl(RES_SERVICE_URL+"search-reservaion?")
@@ -218,9 +211,11 @@ public class RRMSPortalController extends BaseController{
     	   
     	   HttpHeaders headers = new HttpHeaders();
            headers.set("Content-Type", "application/json");
+           headers.set("Authorization", "Bearer " + jwtToken); // adding JWT token to header
+           
     	   //HttpEntity<ReservationSearchDTO> requestBody = new HttpEntity<>(res, headers);
            LOGGER.error("url==> "+url);
-    	   ResponseEntity<Reservation[]> responseEntity = restTemplate.getForEntity(url, Reservation[].class);
+    	   ResponseEntity<Reservation[]> responseEntity = reservationService.searchReservation(url, headers);
     	   if (responseEntity.getStatusCode() == HttpStatus.OK)
     	   {
     		   LOGGER.error("====>  "+List.of(responseEntity.getBody()));

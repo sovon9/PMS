@@ -1,16 +1,24 @@
 package com.sovon9.RRMS_Gateway.jwt;
 
 import java.security.Key;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -69,9 +77,68 @@ public class JwtUtils
 	 * @return
 	 */
 	 public String getUserNameFromJwtToken(String token) {
-	        return Jwts.parser()
-	                        .verifyWith((SecretKey) key())
-	                .build().parseSignedClaims(token)
-	                .getPayload().getSubject();
+		 return getClaimFromToken(token, Claims::getSubject); 
 	    }
+	 
+	// Generic method to extract any claim from the JWT token
+	    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+	        final Claims claims = getAllClaimsFromToken(token);
+	        return claimsResolver.apply(claims);
+	    }
+	 
+	 private Claims getAllClaimsFromToken(String token) {
+	        return Jwts.parser()
+	        		.verifyWith((SecretKey) key())
+	                .build()
+	                .parseSignedClaims(token)
+	                .getPayload();
+	    }
+	 
+	 public Collection<? extends GrantedAuthority> getAuthoritiesFromToken(String token) {
+	        Claims claims = getAllClaimsFromToken(token);
+
+	        // Assuming the roles are stored in a claim called "roles" or "authorities"
+	        Object rolesObject = claims.get("roles");
+//	        if (rolesObject instanceof List) {
+//	            String[] split = rolesObject.toString().split(",");
+//	            return Arrays.stream(split)
+//	                    .map(SimpleGrantedAuthority::new) // Convert role string into a GrantedAuthority
+//	                    .collect(Collectors.toList());
+//	        } else if (rolesObject instanceof Map) {
+//	            // Handle cases where roles might be stored as a map
+//	            Map<String, Object> rolesMap = (Map<String, Object>) rolesObject;
+//	            return rolesMap.values().stream()
+//	                    .map(Object::toString)
+//	                    .map(SimpleGrantedAuthority::new)
+//	                    .collect(Collectors.toList());
+//
+//	        }
+	        if (rolesObject instanceof List) {
+	            // Cast to List<String>
+	            List<?> roles = (List<?>) rolesObject;
+
+	            // Map each role to a GrantedAuthority
+	            return roles.stream()
+	            		.filter(LinkedHashMap.class::isInstance)
+	            		.map(roleMap -> (LinkedHashMap<?, ?>) roleMap)
+	                    .map(roleMap -> (String) roleMap.get("authority"))
+	                    .map(SimpleGrantedAuthority::new)
+	                    .collect(Collectors.toList());
+	        }
+			return Collections.emptyList();
+	    }
+	 
+	 public List<String> getRolesFromJwtToken(String token) {
+		    Claims claims = getAllClaimsFromToken(token);
+		    Object roles = claims.get("roles");
+		    if (roles instanceof List) {
+		        // Ensure the list contains only strings
+		        return ((List<?>) roles).stream()
+		                .filter(role -> role instanceof String)
+		                .map(role -> (String) role)
+		                .collect(Collectors.toList());
+		    }
+		    return new ArrayList<>();
+		}
+
 }

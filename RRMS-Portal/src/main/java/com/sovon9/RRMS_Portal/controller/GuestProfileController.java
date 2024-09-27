@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,26 +18,31 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.sovon9.RRMS_Portal.dto.GuestDto;
+import com.sovon9.RRMS_Portal.service.ExtractJwtTokenFromCookie;
+import com.sovon9.RRMS_Portal.service.GuestInfoService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/")
-public class GuestProfileController
+@RequestMapping("/portal")
+public class GuestProfileController extends BaseController
 {
 	@Value("${GUESTINFO_SERVICE_URL}")
 	private String GUESTINFO_SERVICE_URL;
 	@Autowired
-	RestTemplate restTemplate;
+	private ExtractJwtTokenFromCookie jwtTokenFromCookie;
+	@Autowired
+	private GuestInfoService guestInfoService;
 	
 	Logger LOGGER = LoggerFactory.getLogger(GuestProfileController.class);
 	
 	 ///////////////////////    search guest ID    ///////////////////
     @PostMapping("/search-guest")
     @ResponseBody
-    public List<GuestDto> searchGuest(@RequestBody Map<String, String> searchCriteria)
+    public List<GuestDto> searchGuest(@RequestBody Map<String, String> searchCriteria, HttpServletRequest request)
     {
     	// get data from guestifo service if any guest matches the search criteria
  	    String url = UriComponentsBuilder.fromHttpUrl(GUESTINFO_SERVICE_URL+"guestinfo?")
@@ -49,7 +52,13 @@ public class GuestProfileController
  	    		.queryParam("birthDate", searchCriteria.get("birthDate"))
  	    		.queryParam("phno", searchCriteria.get("phno"))
  	    		.toUriString();
-    	ResponseEntity<GuestDto[]> responseEntity = restTemplate.getForEntity(url, GuestDto[].class);
+		// getting JWT token from cookie
+		String jwtToken = jwtTokenFromCookie.extractJwtFromCookie(request);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", "application/json");
+		headers.set("Authorization", "Bearer " + jwtToken); // adding JWT token to header
+		
+		ResponseEntity<GuestDto[]> responseEntity = guestInfoService.searchGuestData(url, headers);
 		if (responseEntity.getStatusCode() != HttpStatus.OK)
 		{
 			LOGGER.error("Error in fetching guest data "+responseEntity.getStatusCode().value());
@@ -66,18 +75,16 @@ public class GuestProfileController
     }
     
     @GetMapping("/save-guest")
-    public String test(@ModelAttribute("guest") GuestDto guest, Model model)
+    public String test(@ModelAttribute("guest") GuestDto guest, Model model, HttpServletRequest request)
 	{
 		if (null != guest && null != guest.getGuestID())
 		{
+			String url = UriComponentsBuilder.fromHttpUrl(GUESTINFO_SERVICE_URL + "guestinfo").toUriString();
 			// setting the header values
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "application/json");
-			// create Guest entity
-			HttpEntity<GuestDto> guestEntity = new HttpEntity<>(guest, headers);
 			// save guest details
-			ResponseEntity<GuestDto> entity = restTemplate.exchange(GUESTINFO_SERVICE_URL + "guestinfo",
-					HttpMethod.POST, guestEntity, GuestDto.class);
+			ResponseEntity<GuestDto> entity = guestInfoService.saveGuestData(url, guest, headers);
 			if (entity.getStatusCode() == HttpStatus.OK)
 			{
 				model.addAttribute("success", "Guest Info saved successfully!");
